@@ -64,7 +64,6 @@ python mcp_server.py
 | 도구 | 설명 |
 |------|------|
 | `extract_consolehost_history` | ConsoleHost_history.txt 파일을 JSON으로 파싱 |
-| `extract_from_image` | E01/DD 이미지에서 파일 추출 및 JSON 파싱 |
 | `get_info` | 도구 정보 조회 |
 
 ## 출력 예시

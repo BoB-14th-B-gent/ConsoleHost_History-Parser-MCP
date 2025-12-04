@@ -66,44 +66,6 @@ python mcp_server.py
 | `extract_consolehost_history` | ConsoleHost_history.txt 파일을 JSON으로 파싱 |
 | `get_info` | 도구 정보 조회 |
 
-## 출력 예시
-
-### extract_consolehost_history
-
-```json
-{
-  "success": true,
-  "file_path": "C:\\...\\ConsoleHost_history.txt",
-  "file_size_bytes": 1234,
-  "total_lines": 50,
-  "command_count": 45,
-  "encoding": "utf-8",
-  "commands": [
-    {"line_number": 1, "command": "Get-Process"},
-    {"line_number": 2, "command": "cd C:\\Users"},
-    {"line_number": 3, "command": "dir"}
-  ]
-}
-```
-
-### extract_from_image
-
-```json
-{
-  "success": true,
-  "image_path": "C:\\Evidence\\disk.E01",
-  "files_found": 2,
-  "extracted_files": [
-    {
-      "username": "Administrator",
-      "source_path": "/Users/Administrator/.../ConsoleHost_history.txt",
-      "command_count": 30,
-      "commands": [...]
-    }
-  ]
-}
-```
-
 ## 지원 인코딩
 
 - UTF-8

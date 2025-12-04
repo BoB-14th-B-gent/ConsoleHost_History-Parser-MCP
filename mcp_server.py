@@ -289,5 +289,22 @@ def extract_consolehost_history(image_path: str, output_dir: str) -> dict[str, A
     }
 
 
+@mcp.tool()
+def get_info() -> dict[str, Any]:
+
+    return {
+        "name": "ConsoleHost History Parser",
+        "version": VERSION,
+        "author": "amier-ge",
+        "description": "PowerShell ConsoleHost_history.txt Extraction Tool",
+        "capabilities": [
+            "extract_consolehost_history - Extract and parse PowerShell command history from disk images"
+        ],
+        "supported_images": ["E01", "RAW"],
+        "target_file": "ConsoleHost_history.txt",
+        "target_path": "Users/<username>/AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/"
+    }
+
+
 if __name__ == "__main__":
     mcp.run()

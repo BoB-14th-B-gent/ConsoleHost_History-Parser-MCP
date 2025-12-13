@@ -167,22 +167,12 @@ def parse_commands(content_bytes: bytes) -> tuple[list[dict], str | None]:
 
 @mcp.tool()
 def extract_consolehost_history(image_path: str) -> dict[str, Any]:
-    """Extract and parse PowerShell ConsoleHost_history.txt from disk image.
-
-    Args:
-        image_path: Path to the forensic disk image (E01, RAW, DD, etc.)
-
-    Returns:
-        Dictionary containing extracted command history and metadata
-    """
-    # 이미지 파일 존재 확인
     if not Path(image_path).exists():
         return {
             "success": False,
             "error": f"Image file not found: {image_path}"
         }
 
-    # 이미지 열기
     try:
         img = open_image(image_path)
     except Exception as e:
@@ -191,7 +181,6 @@ def extract_consolehost_history(image_path: str) -> dict[str, Any]:
             "error": f"Failed to open image: {e}"
         }
 
-    # 파티션 정보 확인
     try:
         volume = pytsk3.Volume_Info(img)
         partitions = list(volume)
@@ -200,7 +189,6 @@ def extract_consolehost_history(image_path: str) -> dict[str, Any]:
 
     all_results = []
 
-    # 파티션이 있는 경우
     if partitions:
         for part_num, part in enumerate(partitions):
             if part.flags != pytsk3.TSK_VS_PART_FLAG_ALLOC:
@@ -222,7 +210,6 @@ def extract_consolehost_history(image_path: str) -> dict[str, Any]:
             except Exception:
                 continue
     else:
-        # 단일 파일시스템
         try:
             fs = pytsk3.FS_Info(img)
             results = find_consolehost_history(fs)
@@ -233,7 +220,6 @@ def extract_consolehost_history(image_path: str) -> dict[str, Any]:
                 "error": f"Could not process filesystem: {e}"
             }
 
-    # 결과가 없는 경우
     if not all_results:
         return {
             "success": True,

@@ -1,7 +1,6 @@
 import os
 import sys
 from pathlib import Path
-from datetime import datetime
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -167,8 +166,15 @@ def parse_commands(content_bytes: bytes) -> tuple[list[dict], str | None]:
 
 
 @mcp.tool()
-def extract_consolehost_history(image_path: str, output_dir: str) -> dict[str, Any]:
+def extract_consolehost_history(image_path: str) -> dict[str, Any]:
+    """Extract and parse PowerShell ConsoleHost_history.txt from disk image.
 
+    Args:
+        image_path: Path to the forensic disk image (E01, RAW, DD, etc.)
+
+    Returns:
+        Dictionary containing extracted command history and metadata
+    """
     # 이미지 파일 존재 확인
     if not Path(image_path).exists():
         return {
@@ -237,41 +243,21 @@ def extract_consolehost_history(image_path: str, output_dir: str) -> dict[str, A
             "extracted_files": []
         }
 
-    # 출력 디렉토리 생성
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-
     extracted_files = []
 
-    for i, result in enumerate(all_results):
+    for result in all_results:
         username = get_username_from_path(result['path'])
-        output_filename = f"ConsoleHost_history_{username}_{i+1}.txt"
-        output_path = Path(output_dir) / output_filename
 
         # 파일 내용 추출
         content_bytes = extract_file_content(result['entry'])
 
         if content_bytes:
-            # 파일 저장
-            with open(output_path, 'wb') as f:
-                f.write(content_bytes)
-
             # 명령어 파싱
             commands, used_encoding = parse_commands(content_bytes)
-
-            # 메타 파일 저장
-            meta_path = str(output_path) + ".meta.txt"
-            with open(meta_path, 'w', encoding='utf-8') as f:
-                f.write(f"Source Image: {image_path}\n")
-                f.write(f"Original Path: {result['path']}\n")
-                f.write(f"File Size: {result['size']} bytes\n")
-                f.write(f"Extraction Time: {datetime.now().isoformat()}\n")
-                if 'partition' in result:
-                    f.write(f"Partition: {result['partition']}\n")
 
             extracted_files.append({
                 "username": username,
                 "source_path": result['path'],
-                "output_path": str(output_path.absolute()),
                 "file_size": result['size'],
                 "partition": result.get('partition', 'N/A'),
                 "encoding": used_encoding,
@@ -282,7 +268,6 @@ def extract_consolehost_history(image_path: str, output_dir: str) -> dict[str, A
     return {
         "success": True,
         "image_path": image_path,
-        "output_dir": output_dir,
         "files_found": len(all_results),
         "files_extracted": len(extracted_files),
         "extracted_files": extracted_files
